@@ -268,7 +268,7 @@ export default {
   },
   watch: {
     'state.passwordLevel' (val) {
-      console.log(val)
+      console.log(val + '111')
     }
   }
 }
