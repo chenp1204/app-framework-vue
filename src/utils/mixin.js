@@ -8,8 +8,9 @@ import { mapState } from 'vuex'
 const layoutMixin = {
   computed: {
     ...mapState({
-      layoutMode: state => state.layout.layout,
+      layoutMode: state => state.layout.layoutMode,
       navTheme: state => state.layout.theme,
+      navPosition: state => state.layout.navPosition,
       primaryColor: state => state.layout.color,
       colorWeak: state => state.layout.weak,
       fixedHeader: state => state.layout.fixedHeader,
