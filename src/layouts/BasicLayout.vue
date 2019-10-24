@@ -20,7 +20,7 @@
     </a-drawer>
 
     <side-menu
-      v-else-if="isSideMenu()"
+      v-if="!isMobile() && isSideMenu() && isLeftRight()"
       mode="inline"
       :menus="menus"
       :theme="navTheme"
@@ -28,30 +28,74 @@
       :collapsible="true"
     ></side-menu>
 
-    <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: contentPaddingLeft, minHeight: '100vh' }">
-      <!-- layout header -->
+    <!-- layout header -->
+    <div v-if="isTopBottom()" :class="[layoutMode === 'row' ? 'sidemenu': 'topmenu']">
       <global-header
         :mode="layoutMode"
-        :menus="menus"
+        :showNav="isTopMenu()"
+        :navMenus="menus"
+        :theme="navTheme"
+        :collapsed="collapsed"
+        :device="device"
+        @toggle="toggle"
+      />
+    </div>
+
+    <a-layout
+      :class="[layoutMode === 'row' ? 'sidemenu': 'topmenu', `content-width-${contentWidth}`]"
+      :style="{ paddingLeft: contentPaddingLeft, paddingTop: contentPaddingTop, minHeight: '100vh' }">
+      <!-- layout header -->
+      <global-header
+        v-if="isLeftRight()"
+        :mode="layoutMode"
+        :showNav="isTopMenu()"
+        :navMenus="menus"
         :theme="navTheme"
         :collapsed="collapsed"
         :device="device"
         @toggle="toggle"
       />
 
-      <!-- layout content -->
-      <a-layout-content :style="{ height: '100%', margin: '24px 24px 0', paddingTop: fixedHeader ? '64px' : '0' }">
-        <multi-tab v-if="multiTab"></multi-tab>
-        <transition name="page-transition">
-          <route-view />
-        </transition>
-      </a-layout-content>
+      <side-menu
+        v-if="!isMobile() && isSideMenu() && isTopBottom()"
+        mode="inline"
+        :menus="menus"
+        theme="light"
+        :collapsed="collapsed"
+        :collapsible="true"
+      ></side-menu>
 
-      <!-- layout footer -->
-      <a-layout-footer>
-        <global-footer />
-      </a-layout-footer>
+      <template v-if="isLeftRight()">
+        <!-- layout content -->
+        <a-layout-content :style="{ height: '100%', margin: '24px 24px 0', paddingTop: fixedHeader ? '64px' : '0' }">
+          <multi-tab v-if="multiTab"></multi-tab>
+          <transition name="page-transition">
+            <route-view />
+          </transition>
+        </a-layout-content>
 
+        <!-- layout footer -->
+        <a-layout-footer>
+          <global-footer />
+        </a-layout-footer>
+      </template>
+
+      <template v-else>
+        <a-layout>
+          <!-- layout content -->
+          <a-layout-content :style="{ height: '100%', margin: '24px 24px 0' }">
+            <multi-tab v-if="multiTab"></multi-tab>
+            <transition name="page-transition">
+              <route-view />
+            </transition>
+          </a-layout-content>
+
+          <!-- layout footer -->
+          <a-layout-footer>
+            <global-footer />
+          </a-layout-footer>
+        </a-layout>
+      </template>
       <!-- Setting Drawer (show in development mode) -->
       <setting-drawer v-if="!production"></setting-drawer>
     </a-layout>
@@ -96,10 +140,17 @@ export default {
       if (!this.fixSidebar || this.isMobile()) {
         return '0'
       }
-      if (this.sidebarOpened) {
-        return '256px'
+      if (this.isLeftRight()) {
+        return (this.sidebarOpened) ? '256px' : '80px'
+      } else {
+        return '0'
       }
-      return '80px'
+    },
+    contentPaddingTop () {
+      if (!this.fixedHeader || this.isMobile()) {
+        return '0'
+      }
+      return this.isTopBottom() ? '64px' : '0'
     }
   },
   watch: {
@@ -123,10 +174,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setSidebar']),
+    ...mapActions(['ToggleSidebar']),
     toggle () {
       this.collapsed = !this.collapsed
-      this.setSidebar(!this.collapsed)
+      this.ToggleSidebar(!this.collapsed)
       triggerWindowResizeEvent()
     },
     paddingCalc () {

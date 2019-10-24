@@ -1,7 +1,7 @@
 
 const layout = {
   state: {
-    sidebarSize: 'max',
+    sidebarOpen: false,
     device: 'desktop',
     theme: '',
     navPosition: 'left',
@@ -15,14 +15,17 @@ const layout = {
     multiTab: true
   },
   mutations: {
-    TOGGLE_SIDEBAR_SIZE: (state, type) => {
-      state.sidebarSize = type
+    TOGGLE_SIDEBAR: (state, open) => {
+      state.sidebarOpen = open
     },
     TOGGLE_DEVICE: (state, device) => {
       state.device = device
     },
     TOGGLE_THEME: (state, theme) => {
       state.theme = theme
+    },
+    TOGGLE_NAV_POSITION: (state, position) => {
+      state.navPosition = position
     },
     TOGGLE_LAYOUT_MODE: (state, layout) => {
       state.layoutMode = layout
@@ -50,14 +53,17 @@ const layout = {
     }
   },
   actions: {
-    ToggleSidebarSize ({ commit }, type) {
-      commit('TOGGLE_SIDEBAR_SIZE', type)
+    ToggleSidebar ({ commit }, type) {
+      commit('TOGGLE_SIDEBAR', type)
     },
     ToggleDevice ({ commit }, device) {
       commit('TOGGLE_DEVICE', device)
     },
     ToggleTheme ({ commit }, theme) {
       commit('TOGGLE_THEME', theme)
+    },
+    ToggleNavPosition ({ commit }, position) {
+      commit('TOGGLE_NAV_POSITION', position)
     },
     ToggleLayoutMode ({ commit }, mode) {
       commit('TOGGLE_LAYOUT_MODE', mode)
@@ -67,9 +73,15 @@ const layout = {
         commit('TOGGLE_FIXED_HEADER_HIDDEN', false)
       }
       commit('TOGGLE_FIXED_HEADER', fixedHeader)
+      if (this.layoutMode === 'column') {
+        commit('TOGGLE_FIXED_SIDERBAR', fixedHeader)
+      }
     },
     ToggleFixSiderbar ({ commit }, fixSiderbar) {
       commit('TOGGLE_FIXED_SIDERBAR', fixSiderbar)
+      if (this.layoutMode === 'column') {
+        commit('TOGGLE_FIXED_HEADER', fixSiderbar)
+      }
     },
     ToggleFixedHeaderHidden ({ commit }, show) {
       commit('TOGGLE_FIXED_HEADER_HIDDEN', show)

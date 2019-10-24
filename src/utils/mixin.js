@@ -18,16 +18,22 @@ const layoutMixin = {
       fixSidebar: state => state.layout.fixSiderbar,
       contentWidth: state => state.layout.contentWidth,
       autoHideHeader: state => state.layout.autoHideHeader,
-      sidebarOpened: state => state.layout.sidebar,
+      sidebarOpened: state => state.layout.sidebarOpen,
       multiTab: state => state.layout.multiTab
     })
   },
   methods: {
     isTopMenu () {
-      return this.layoutMode === 'topmenu'
+      return this.navPosition === 'top'
     },
     isSideMenu () {
-      return !this.isTopMenu()
+      return this.navPosition === 'left'
+    },
+    isLeftRight () {
+      return this.layoutMode === 'row'
+    },
+    isTopBottom () {
+      return this.layoutMode === 'column'
     }
   }
 }
@@ -58,16 +64,16 @@ const AppDeviceEnquire = {
       switch (deviceType) {
         case DEVICE_TYPE.DESKTOP:
           $store.commit('TOGGLE_DEVICE', 'desktop')
-          $store.dispatch('setSidebar', true)
+          $store.dispatch('ToggleSidebar', false)
           break
         case DEVICE_TYPE.TABLET:
           $store.commit('TOGGLE_DEVICE', 'tablet')
-          $store.dispatch('setSidebar', false)
+          $store.dispatch('ToggleSidebar', false)
           break
         case DEVICE_TYPE.MOBILE:
         default:
           $store.commit('TOGGLE_DEVICE', 'mobile')
-          $store.dispatch('setSidebar', true)
+          $store.dispatch('ToggleSidebar', true)
           break
       }
     })
