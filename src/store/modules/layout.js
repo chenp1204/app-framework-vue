@@ -8,7 +8,7 @@ const layout = {
     layoutMode: '',
     contentWidth: '',
     fixedHeader: false,
-    fixSiderbar: false,
+    fixedSidebar: false,
     autoHideHeader: false,
     color: null,
     weak: false,
@@ -33,8 +33,8 @@ const layout = {
     TOGGLE_FIXED_HEADER: (state, fixed) => {
       state.fixedHeader = fixed
     },
-    TOGGLE_FIXED_SIDERBAR: (state, fixed) => {
-      state.fixSiderbar = fixed
+    TOGGLE_FIXED_SIDEBAR: (state, fixed) => {
+      state.fixedSidebar = fixed
     },
     TOGGLE_FIXED_HEADER_HIDDEN: (state, show) => {
       state.autoHideHeader = show
@@ -62,25 +62,28 @@ const layout = {
     ToggleTheme ({ commit }, theme) {
       commit('TOGGLE_THEME', theme)
     },
-    ToggleNavPosition ({ commit }, position) {
+    ToggleNavPosition ({ commit, state }, position) {
       commit('TOGGLE_NAV_POSITION', position)
+      if (position === 'top' && state.layoutMode === 'column') {
+        commit('TOGGLE_FIXED_SIDEBAR', false)
+      }
     },
     ToggleLayoutMode ({ commit }, mode) {
       commit('TOGGLE_LAYOUT_MODE', mode)
     },
-    ToggleFixedHeader ({ commit }, fixedHeader) {
+    ToggleFixedHeader ({ commit, state }, fixedHeader) {
       if (!fixedHeader) {
         commit('TOGGLE_FIXED_HEADER_HIDDEN', false)
       }
       commit('TOGGLE_FIXED_HEADER', fixedHeader)
-      if (this.layoutMode === 'column') {
-        commit('TOGGLE_FIXED_SIDERBAR', fixedHeader)
+      if (state.layoutMode === 'column') {
+        commit('TOGGLE_FIXED_SIDEBAR', fixedHeader)
       }
     },
-    ToggleFixSiderbar ({ commit }, fixSiderbar) {
-      commit('TOGGLE_FIXED_SIDERBAR', fixSiderbar)
-      if (this.layoutMode === 'column') {
-        commit('TOGGLE_FIXED_HEADER', fixSiderbar)
+    ToggleFixedSidebar ({ commit, state }, fixedSidebar) {
+      commit('TOGGLE_FIXED_SIDEBAR', fixedSidebar)
+      if (state.layoutMode === 'column') {
+        commit('TOGGLE_FIXED_HEADER', fixedSidebar)
       }
     },
     ToggleFixedHeaderHidden ({ commit }, show) {

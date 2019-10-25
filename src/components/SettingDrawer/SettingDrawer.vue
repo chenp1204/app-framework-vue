@@ -65,9 +65,9 @@
               <template slot="title">
                 侧边栏导航
               </template>
-              <div class="setting-drawer-index-item" @click="handleLayout('sidemenu')">
+              <div class="setting-drawer-index-item" @click="handleLayout('row')">
                 <img src="https://gw.alipayobjects.com/zos/rmsportal/JopDzEhOqwOjeNTXkoje.svg" alt="sidemenu">
-                <div class="setting-drawer-index-selectIcon" v-if="layoutMode === 'sidemenu'">
+                <div class="setting-drawer-index-selectIcon" v-if="layoutMode === 'row'">
                   <a-icon type="check"/>
                 </div>
               </div>
@@ -77,9 +77,9 @@
               <template slot="title">
                 顶部栏导航
               </template>
-              <div class="setting-drawer-index-item" @click="handleLayout('topmenu')">
+              <div class="setting-drawer-index-item" @click="handleLayout('column')">
                 <img src="https://gw.alipayobjects.com/zos/rmsportal/KDNDBbriJhLwuqMoxcAr.svg" alt="topmenu">
-                <div class="setting-drawer-index-selectIcon" v-if="layoutMode !== 'sidemenu'">
+                <div class="setting-drawer-index-selectIcon" v-if="layoutMode === 'column'">
                   <a-icon type="check"/>
                 </div>
               </div>
@@ -94,7 +94,7 @@
                   </template>
                   <a-select size="small" style="width: 80px;" :defaultValue="contentWidth" @change="handleContentWidthChange">
                     <a-select-option value="Fixed">固定</a-select-option>
-                    <a-select-option value="Fluid" v-if="layoutMode !== 'sidemenu'">流式</a-select-option>
+                    <a-select-option value="Fluid" v-if="layoutMode === 'column'">流式</a-select-option>
                   </a-select>
                 </a-tooltip>
                 <a-list-item-meta>
@@ -102,13 +102,24 @@
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :defaultChecked="fixedHeader" @change="handleFixedHeader" />
+                <template slot="actions">
+                  <a-select size="small" style="width: 80px;" :defaultValue="navPosition" @change="handleNavPositionChange">
+                    <a-select-option value="left">左侧</a-select-option>
+                    <a-select-option value="top" v-if="layoutMode === 'column'">顶部</a-select-option>
+                  </a-select>
+                </template>
+                <a-list-item-meta>
+                  <div slot="title">导航菜单位置</div>
+                </a-list-item-meta>
+              </a-list-item>
+              <a-list-item>
+                <a-switch slot="actions" size="small" v-model="fixedHeader" @change="handleFixedHeader" />
                 <a-list-item-meta>
                   <div slot="title">固定 Header</div>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :disabled="!fixedHeader" :defaultChecked="autoHideHeader" @change="handleFixedHeaderHidden" />
+                <a-switch slot="actions" size="small" :disabled="!fixedHeader" v-model="autoHideHeader" @change="handleFixedHeaderHidden" />
                 <a-list-item-meta>
                   <a-tooltip slot="title" placement="left">
                     <template slot="title">固定 Header 时可配置</template>
@@ -116,10 +127,10 @@
                   </a-tooltip>
                 </a-list-item-meta>
               </a-list-item>
-              <a-list-item >
-                <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :defaultChecked="fixSiderbar" @change="handleFixSiderbar" />
+              <a-list-item>
+                <a-switch slot="actions" size="small" :disabled="(layoutMode === 'column' && navPosition === 'top')" v-model="fixedSidebar" @change="handleFixedSidebar" />
                 <a-list-item-meta>
-                  <div slot="title" :style="{ textDecoration: layoutMode === 'topmenu' ? 'line-through' : 'unset' }">固定侧边菜单</div>
+                  <div slot="title" :style="{ textDecoration: layoutMode === 'column' && navPosition === 'top' ? 'line-through' : 'unset' }">固定侧边菜单</div>
                 </a-list-item-meta>
               </a-list-item>
             </a-list>
@@ -132,13 +143,13 @@
           <div>
             <a-list :split="false">
               <a-list-item>
-                <a-switch slot="actions" size="small" :defaultChecked="colorWeak" @change="onColorWeak" />
+                <a-switch slot="actions" size="small" v-model="colorWeak" @change="onColorWeak" />
                 <a-list-item-meta>
                   <div slot="title">色弱模式</div>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :defaultChecked="multiTab" @change="onMultiTab" />
+                <a-switch slot="actions" size="small" v-model="multiTab" @change="onMultiTab" />
                 <a-list-item-meta>
                   <div slot="title">多页签模式</div>
                 </a-list-item-meta>
@@ -228,7 +239,7 @@ export default {
   layout: '${this.layoutMode}', // nav menu position: sidemenu or topmenu
   contentWidth: '${this.contentWidth}', // layout of content: Fluid or Fixed, only works when layout is topmenu
   fixedHeader: ${this.fixedHeader}, // sticky header
-  fixSiderbar: ${this.fixSiderbar}, // sticky siderbar
+  fixedSidebar: ${this.fixedSidebar}, // sticky siderbar
   autoHideHeader: ${this.autoHideHeader}, //  auto hide header
   colorWeak: ${this.colorWeak},
   multiTab: ${this.multiTab},
@@ -251,7 +262,7 @@ export default {
     handleLayout (mode) {
       this.$store.dispatch('ToggleLayoutMode', mode)
       // 因为顶部菜单不能固定左侧菜单栏，所以强制关闭
-      this.handleFixSiderbar(false)
+      this.handleFixedSidebar(false)
     },
     handleContentWidthChange (type) {
       this.$store.dispatch('ToggleContentWidth', type)
@@ -268,12 +279,15 @@ export default {
     handleFixedHeaderHidden (autoHidden) {
       this.$store.dispatch('ToggleFixedHeaderHidden', autoHidden)
     },
-    handleFixSiderbar (fixed) {
-      if (this.layoutMode === 'topmenu') {
-        this.$store.dispatch('ToggleFixSiderbar', false)
+    handleNavPositionChange (position) {
+      this.$store.dispatch('ToggleNavPosition', position)
+    },
+    handleFixedSidebar (fixed) {
+      if (this.layoutMode === 'column' && this.navPosition === 'top') {
+        this.$store.dispatch('ToggleFixedSidebar', false)
         return
       }
-      this.$store.dispatch('ToggleFixSiderbar', fixed)
+      this.$store.dispatch('ToggleFixedSidebar', fixed)
     }
   }
 }

@@ -42,7 +42,7 @@
     </div>
 
     <a-layout
-      :class="[layoutMode === 'row' ? 'sidemenu': 'topmenu', `content-width-${contentWidth}`]"
+      :class="[layoutStyle, `content-width-${contentWidth}`]"
       :style="{ paddingLeft: contentPaddingLeft, paddingTop: contentPaddingTop, minHeight: '100vh' }">
       <!-- layout header -->
       <global-header
@@ -81,7 +81,7 @@
       </template>
 
       <template v-else>
-        <a-layout>
+        <a-layout :style="{ paddingLeft: fixedSidebar ? '80px' : '0'}">
           <!-- layout content -->
           <a-layout-content :style="{ height: '100%', margin: '24px 24px 0' }">
             <multi-tab v-if="multiTab"></multi-tab>
@@ -137,7 +137,7 @@ export default {
       mainMenu: state => state.permission.addRouters
     }),
     contentPaddingLeft () {
-      if (!this.fixSidebar || this.isMobile()) {
+      if (!this.fixedSidebar || this.isMobile()) {
         return '0'
       }
       if (this.isLeftRight()) {
@@ -151,6 +151,14 @@ export default {
         return '0'
       }
       return this.isTopBottom() ? '64px' : '0'
+    },
+    layoutStyle () {
+      if (this.isLeftRight()) {
+        return 'sidemenu'
+      } else if (this.isTopBottom()) {
+        return this.navPosition === 'left' ? 'topmenu-sidebar' : 'topmenu'
+      }
+      return ''
     }
   },
   watch: {
@@ -185,7 +193,7 @@ export default {
       if (this.sidebarOpened) {
         left = this.isDesktop() ? '256px' : '80px'
       } else {
-        left = (this.isMobile() && '0') || ((this.fixSidebar && '80px') || '0')
+        left = (this.isMobile() && '0') || ((this.fixedSidebar && '80px') || '0')
       }
       return left
     },

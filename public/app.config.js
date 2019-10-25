@@ -22,7 +22,7 @@
         * colorWeak - 色盲模式
         * layoutMode - 整体布局方式 ['row', 'column'] 两种布局
         * fixedHeader - 固定 Header : boolean
-        * fixSiderbar - 固定左侧菜单栏 ： boolean
+        * fixedSidebar - 固定左侧菜单栏 ： boolean
         * autoHideHeader - 向下滚动时，隐藏 Header : boolean
         * contentWidth - 内容区布局： 流式 |  固定
         */
@@ -33,7 +33,7 @@
         layoutMode: 'column', // layout mode: row or column
         contentWidth: 'Fixed', // layout of content: Fluid or Fixed, only works when layout is topmenu
         fixedHeader: false, // sticky header
-        fixSiderbar: false, // sticky siderbar
+        fixedSidebar: false, // sticky siderbar
         autoHideHeader: false, //  auto hide header
         colorWeak: false,
         multiTab: false
