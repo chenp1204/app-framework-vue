@@ -62,29 +62,17 @@ const layout = {
     ToggleTheme ({ commit }, theme) {
       commit('TOGGLE_THEME', theme)
     },
-    ToggleNavPosition ({ commit, state }, position) {
+    ToggleNavPosition ({ commit }, position) {
       commit('TOGGLE_NAV_POSITION', position)
-      if (position === 'top' && state.layoutMode === 'column') {
-        commit('TOGGLE_FIXED_SIDEBAR', false)
-      }
     },
     ToggleLayoutMode ({ commit }, mode) {
       commit('TOGGLE_LAYOUT_MODE', mode)
     },
-    ToggleFixedHeader ({ commit, state }, fixedHeader) {
-      if (!fixedHeader) {
-        commit('TOGGLE_FIXED_HEADER_HIDDEN', false)
-      }
-      commit('TOGGLE_FIXED_HEADER', fixedHeader)
-      if (state.layoutMode === 'column') {
-        commit('TOGGLE_FIXED_SIDEBAR', state.navPosition === 'left' ? fixedHeader : false)
-      }
+    ToggleFixedHeader ({ commit }, fixed) {
+      commit('TOGGLE_FIXED_HEADER', fixed)
     },
-    ToggleFixedSidebar ({ commit, state }, fixedSidebar) {
-      commit('TOGGLE_FIXED_SIDEBAR', fixedSidebar)
-      if (state.layoutMode === 'column') {
-        commit('TOGGLE_FIXED_HEADER', fixedSidebar)
-      }
+    ToggleFixedSidebar ({ commit }, fixed) {
+      commit('TOGGLE_FIXED_SIDEBAR', fixed)
     },
     ToggleFixedHeaderHidden ({ commit }, show) {
       commit('TOGGLE_FIXED_HEADER_HIDDEN', show)

@@ -92,7 +92,7 @@
                   <template slot="title">
                     该设定仅 [顶部栏导航] 时有效
                   </template>
-                  <a-select size="small" style="width: 80px;" :defaultValue="contentWidth" @change="handleContentWidthChange">
+                  <a-select size="small" style="width: 80px;" :value="contentWidth" @change="handleContentWidthChange">
                     <a-select-option value="Fixed">固定</a-select-option>
                     <a-select-option value="Fluid" v-if="layoutMode === 'column'">流式</a-select-option>
                   </a-select>
@@ -103,7 +103,7 @@
               </a-list-item>
               <a-list-item>
                 <template slot="actions">
-                  <a-select size="small" style="width: 80px;" :defaultValue="navPosition" @change="handleNavPositionChange">
+                  <a-select size="small" style="width: 80px;" :value="navPosition" @change="handleNavPositionChange">
                     <a-select-option value="left">左侧</a-select-option>
                     <a-select-option value="top" v-if="layoutMode === 'column'">顶部</a-select-option>
                   </a-select>
@@ -113,24 +113,24 @@
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" v-model="fixedHeader" @change="handleFixedHeader" />
+                <a-switch slot="actions" size="small" :checked="fixedHeader" @change="handleFixedHeader" />
                 <a-list-item-meta>
                   <div slot="title">固定 Header</div>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :disabled="!fixedHeader" v-model="autoHideHeader" @change="handleFixedHeaderHidden" />
+                <a-switch slot="actions" size="small" :disabled="!canHiddenHeader" :checked="autoHideHeader" @change="handleFixedHeaderHidden" />
                 <a-list-item-meta>
                   <a-tooltip slot="title" placement="left">
                     <template slot="title">固定 Header 时可配置</template>
-                    <div :style="{ opacity: !fixedHeader ? '0.5' : '1' }">下滑时隐藏 Header</div>
+                    <div :style="{ textDecoration: !canHiddenHeader ? 'line-through' : 'unset' }">下滑时隐藏 Header</div>
                   </a-tooltip>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :disabled="(layoutMode === 'column' && navPosition === 'top')" v-model="fixedSidebar" @change="handleFixedSidebar" />
+                <a-switch slot="actions" size="small" :disabled="(isTopBottom() && navPosition === 'top')" :checked="fixedSidebar" @change="handleFixedSidebar" />
                 <a-list-item-meta>
-                  <div slot="title" :style="{ textDecoration: layoutMode === 'column' && navPosition === 'top' ? 'line-through' : 'unset' }">固定侧边菜单</div>
+                  <div slot="title" :style="{ textDecoration: isTopBottom() && navPosition === 'top' ? 'line-through' : 'unset' }">固定侧边菜单</div>
                 </a-list-item-meta>
               </a-list-item>
             </a-list>
@@ -143,13 +143,13 @@
           <div>
             <a-list :split="false">
               <a-list-item>
-                <a-switch slot="actions" size="small" v-model="colorWeak" @change="onColorWeak" />
+                <a-switch slot="actions" size="small" :checked="colorWeak" @change="onColorWeak" />
                 <a-list-item-meta>
                   <div slot="title">色弱模式</div>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" v-model="multiTab" @change="onMultiTab" />
+                <a-switch slot="actions" size="small" :checked="multiTab" @change="onMultiTab" />
                 <a-list-item-meta>
                   <div slot="title">多页签模式</div>
                 </a-list-item-meta>
@@ -261,8 +261,18 @@ export default {
     },
     handleLayout (mode) {
       this.$store.dispatch('ToggleLayoutMode', mode)
-      // 因为顶部菜单不能固定左侧菜单栏，所以强制关闭
-      this.handleFixedSidebar(false)
+      if (mode === 'row') {
+        // 横向布局，导航菜单必须在左侧sidebar
+        this.$store.dispatch('ToggleNavPosition', 'left')
+      } else if (mode === 'column') {
+        if (this.navPosition === 'left') {
+          // 切换到纵向布局时，如果header或sidebar有固定，同时固定header和sidebar
+          if (this.fixedHeader || this.fixedSidebar) {
+            this.$store.dispatch('ToggleFixedHeader', true)
+            this.$store.dispatch('ToggleFixedSidebar', true)
+          }
+        }
+      }
     },
     handleContentWidthChange (type) {
       this.$store.dispatch('ToggleContentWidth', type)
@@ -275,19 +285,36 @@ export default {
     },
     handleFixedHeader (fixed) {
       this.$store.dispatch('ToggleFixedHeader', fixed)
+      if (!fixed) {
+        this.$store.dispatch('ToggleFixedHeaderHidden', false)
+      }
+      if (this.layoutMode === 'column') {
+        this.$store.dispatch('ToggleFixedSidebar', this.navPosition === 'left' ? fixed : false)
+      }
     },
     handleFixedHeaderHidden (autoHidden) {
       this.$store.dispatch('ToggleFixedHeaderHidden', autoHidden)
     },
     handleNavPositionChange (position) {
       this.$store.dispatch('ToggleNavPosition', position)
+      if (this.layoutMode === 'column') {
+        this.$store.dispatch('ToggleFixedSidebar', position === 'left' ? this.fixedHeader : false)
+      }
     },
     handleFixedSidebar (fixed) {
-      if (this.layoutMode === 'column' && this.navPosition === 'top') {
-        this.$store.dispatch('ToggleFixedSidebar', false)
-        return
-      }
       this.$store.dispatch('ToggleFixedSidebar', fixed)
+      if (this.layoutMode === 'column') {
+        this.$store.dispatch('ToggleFixedHeader', fixed)
+      }
+    }
+  },
+  computed: {
+    canHiddenHeader () {
+      if (this.isLeftRight()) {
+        return this.fixedHeader
+      } else {
+        return this.fixedHeader && this.isTopMenu()
+      }
     }
   }
 }
