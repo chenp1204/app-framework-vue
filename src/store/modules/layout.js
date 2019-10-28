@@ -77,7 +77,7 @@ const layout = {
       }
       commit('TOGGLE_FIXED_HEADER', fixedHeader)
       if (state.layoutMode === 'column') {
-        commit('TOGGLE_FIXED_SIDEBAR', fixedHeader)
+        commit('TOGGLE_FIXED_SIDEBAR', state.navPosition === 'left' ? fixedHeader : false)
       }
     },
     ToggleFixedSidebar ({ commit, state }, fixedSidebar) {

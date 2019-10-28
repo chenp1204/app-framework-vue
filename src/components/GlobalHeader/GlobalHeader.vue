@@ -11,7 +11,7 @@
           <user-menu></user-menu>
         </div>
         <div v-else :class="['top-nav-header-index', theme]">
-          <div class="header-index-wide">
+          <div :class="['header-index-wide', (isTopBottom() && isSideMenu()) && 'header-index-wide-full']">
             <div class="header-index-left">
               <logo class="top-nav-header" :show-title="device !== 'mobile'"/>
               <s-menu v-if="device !== 'mobile' && showNav" mode="horizontal" :menu="navMenus" :theme="theme" />
