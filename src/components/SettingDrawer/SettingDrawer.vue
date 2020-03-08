@@ -65,9 +65,9 @@
               <template slot="title">
                 侧边栏导航
               </template>
-              <div class="setting-drawer-index-item" @click="handleLayout('sidemenu')">
+              <div class="setting-drawer-index-item" @click="handleLayout('row')">
                 <img src="https://gw.alipayobjects.com/zos/rmsportal/JopDzEhOqwOjeNTXkoje.svg" alt="sidemenu">
-                <div class="setting-drawer-index-selectIcon" v-if="layoutMode === 'sidemenu'">
+                <div class="setting-drawer-index-selectIcon" v-if="layoutMode === 'row'">
                   <a-icon type="check"/>
                 </div>
               </div>
@@ -77,9 +77,9 @@
               <template slot="title">
                 顶部栏导航
               </template>
-              <div class="setting-drawer-index-item" @click="handleLayout('topmenu')">
+              <div class="setting-drawer-index-item" @click="handleLayout('column')">
                 <img src="https://gw.alipayobjects.com/zos/rmsportal/KDNDBbriJhLwuqMoxcAr.svg" alt="topmenu">
-                <div class="setting-drawer-index-selectIcon" v-if="layoutMode !== 'sidemenu'">
+                <div class="setting-drawer-index-selectIcon" v-if="layoutMode === 'column'">
                   <a-icon type="check"/>
                 </div>
               </div>
@@ -92,9 +92,9 @@
                   <template slot="title">
                     该设定仅 [顶部栏导航] 时有效
                   </template>
-                  <a-select size="small" style="width: 80px;" :defaultValue="contentWidth" @change="handleContentWidthChange">
+                  <a-select size="small" style="width: 80px;" :value="contentWidth" @change="handleContentWidthChange">
                     <a-select-option value="Fixed">固定</a-select-option>
-                    <a-select-option value="Fluid" v-if="layoutMode !== 'sidemenu'">流式</a-select-option>
+                    <a-select-option value="Fluid" v-if="layoutMode === 'column'">流式</a-select-option>
                   </a-select>
                 </a-tooltip>
                 <a-list-item-meta>
@@ -102,24 +102,35 @@
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :defaultChecked="fixedHeader" @change="handleFixedHeader" />
+                <template slot="actions">
+                  <a-select size="small" style="width: 80px;" :value="navPosition" @change="handleNavPositionChange">
+                    <a-select-option value="left">左侧</a-select-option>
+                    <a-select-option value="top" v-if="layoutMode === 'column'">顶部</a-select-option>
+                  </a-select>
+                </template>
+                <a-list-item-meta>
+                  <div slot="title">导航菜单位置</div>
+                </a-list-item-meta>
+              </a-list-item>
+              <a-list-item>
+                <a-switch slot="actions" size="small" :checked="fixedHeader" @change="handleFixedHeader" />
                 <a-list-item-meta>
                   <div slot="title">固定 Header</div>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :disabled="!fixedHeader" :defaultChecked="autoHideHeader" @change="handleFixedHeaderHidden" />
+                <a-switch slot="actions" size="small" :disabled="!canHiddenHeader" :checked="autoHideHeader" @change="handleFixedHeaderHidden" />
                 <a-list-item-meta>
                   <a-tooltip slot="title" placement="left">
                     <template slot="title">固定 Header 时可配置</template>
-                    <div :style="{ opacity: !fixedHeader ? '0.5' : '1' }">下滑时隐藏 Header</div>
+                    <div :style="{ textDecoration: !canHiddenHeader ? 'line-through' : 'unset' }">下滑时隐藏 Header</div>
                   </a-tooltip>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item >
                 <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :defaultChecked="fixedSidebar" @change="handleFixedSidebar" />
                 <a-list-item-meta>
-                  <div slot="title" :style="{ textDecoration: layoutMode === 'topmenu' ? 'line-through' : 'unset' }">固定侧边菜单</div>
+                  <div slot="title" :style="{ textDecoration: isTopBottom() && navPosition === 'top' ? 'line-through' : 'unset' }">固定侧边菜单</div>
                 </a-list-item-meta>
               </a-list-item>
             </a-list>
@@ -132,13 +143,13 @@
           <div>
             <a-list :split="false">
               <a-list-item>
-                <a-switch slot="actions" size="small" :defaultChecked="colorWeak" @change="onColorWeak" />
+                <a-switch slot="actions" size="small" :checked="colorWeak" @change="onColorWeak" />
                 <a-list-item-meta>
                   <div slot="title">色弱模式</div>
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item>
-                <a-switch slot="actions" size="small" :defaultChecked="multiTab" @change="onMultiTab" />
+                <a-switch slot="actions" size="small" :checked="multiTab" @change="onMultiTab" />
                 <a-list-item-meta>
                   <div slot="title">多页签模式</div>
                 </a-list-item-meta>
@@ -264,6 +275,12 @@ export default {
     },
     handleFixedHeader (fixed) {
       this.$store.dispatch('ToggleFixedHeader', fixed)
+      if (!fixed) {
+        this.$store.dispatch('ToggleFixedHeaderHidden', false)
+      }
+      if (this.layoutMode === 'column') {
+        this.$store.dispatch('ToggleFixedSidebar', this.navPosition === 'left' ? fixed : false)
+      }
     },
     handleFixedHeaderHidden (autoHidden) {
       this.$store.dispatch('ToggleFixedHeaderHidden', autoHidden)

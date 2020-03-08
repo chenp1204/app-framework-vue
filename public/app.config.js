@@ -21,7 +21,7 @@
         * colorWeak - 色盲模式
         * layoutMode - 整体布局方式 ['topmenu', 'sidemenu'] 两种布局
         * fixedHeader - 固定 Header : boolean
-        * fixSiderbar - 固定左侧菜单栏 ： boolean
+        * fixedSidebar - 固定左侧菜单栏 ： boolean
         * autoHideHeader - 向下滚动时，隐藏 Header : boolean
         * contentWidth - 内容区布局： 流式 |  固定
         */
