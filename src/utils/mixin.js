@@ -10,12 +10,10 @@ const layoutMixin = {
     ...mapState({
       layoutMode: state => state.layout.layoutMode,
       navTheme: state => state.layout.theme,
-      navPosition: state => state.layout.navPosition,
       primaryColor: state => state.layout.color,
       colorWeak: state => state.layout.weak,
       fixedHeader: state => state.layout.fixedHeader,
-      fixSiderbar: state => state.layout.fixSiderbar,
-      fixSidebar: state => state.layout.fixSiderbar,
+      fixedSidebar: state => state.layout.fixedSidebar,
       contentWidth: state => state.layout.contentWidth,
       autoHideHeader: state => state.layout.autoHideHeader,
       sidebarOpened: state => state.layout.sidebar,
@@ -58,16 +56,16 @@ const AppDeviceEnquire = {
       switch (deviceType) {
         case DEVICE_TYPE.DESKTOP:
           $store.commit('TOGGLE_DEVICE', 'desktop')
-          $store.dispatch('setSidebar', true)
+          $store.dispatch('ToggleSidebar', true)
           break
         case DEVICE_TYPE.TABLET:
           $store.commit('TOGGLE_DEVICE', 'tablet')
-          $store.dispatch('setSidebar', false)
+          $store.dispatch('ToggleSidebar', false)
           break
         case DEVICE_TYPE.MOBILE:
         default:
           $store.commit('TOGGLE_DEVICE', 'mobile')
-          $store.dispatch('setSidebar', true)
+          $store.dispatch('ToggleSidebar', true)
           break
       }
     })

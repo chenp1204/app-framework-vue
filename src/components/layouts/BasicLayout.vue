@@ -93,7 +93,7 @@ export default {
       mainMenu: state => state.permission.addRouters
     }),
     contentPaddingLeft () {
-      if (!this.fixSidebar || this.isMobile()) {
+      if (!this.fixedSidebar || this.isMobile()) {
         return '0'
       }
       if (this.sidebarOpened) {
@@ -123,10 +123,10 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setSidebar']),
+    ...mapActions(['ToggleSidebar']),
     toggle () {
       this.collapsed = !this.collapsed
-      this.setSidebar(!this.collapsed)
+      this.ToggleSidebar(!this.collapsed)
       triggerWindowResizeEvent()
     },
     paddingCalc () {
@@ -134,7 +134,7 @@ export default {
       if (this.sidebarOpened) {
         left = this.isDesktop() ? '256px' : '80px'
       } else {
-        left = (this.isMobile() && '0') || ((this.fixSidebar && '80px') || '0')
+        left = (this.isMobile() && '0') || ((this.fixedSidebar && '80px') || '0')
       }
       return left
     },
@@ -148,7 +148,7 @@ export default {
 </script>
 
 <style lang="less">
-@import url('../components/global.less');
+@import url('./../global.less');
 
 /*
  * The following styles are auto-applied to elements with

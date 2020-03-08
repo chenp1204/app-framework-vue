@@ -1,7 +1,7 @@
 // eslint-disable-next-line
 import * as loginService from '@/api/login'
 // eslint-disable-next-line
-import { BasicLayout, RouteView, BlankLayout, PageView } from '@/layouts'
+import { BasicLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
 
 // 前端路由表
 const constantRouterComponents = {

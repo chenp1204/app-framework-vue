@@ -135,7 +135,7 @@
 
 <script>
 import { deviceMixin } from '@/utils/mixin'
-import { PageView } from '@/layouts'
+import { PageView } from '@/components/layouts'
 import DetailList from '@/components/tools/DetailList'
 
 const DetailListItem = DetailList.Item

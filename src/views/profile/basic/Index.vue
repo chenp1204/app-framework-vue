@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import { PageView } from '@/layouts'
+import { PageView } from '@/components/layouts'
 import { STable } from '@/components'
 import DetailList from '@/components/tools/DetailList'
 const DetailListItem = DetailList.Item

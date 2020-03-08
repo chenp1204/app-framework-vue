@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { PageView, RouteView } from '@/layouts'
+import { PageView, RouteView } from '@/components/layouts'
 import { deviceMixin } from '@/utils/mixin.js'
 
 export default {

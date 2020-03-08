@@ -117,7 +117,7 @@
                 </a-list-item-meta>
               </a-list-item>
               <a-list-item >
-                <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :defaultChecked="fixSiderbar" @change="handleFixSiderbar" />
+                <a-switch slot="actions" size="small" :disabled="(layoutMode === 'topmenu')" :defaultChecked="fixedSidebar" @change="handleFixedSidebar" />
                 <a-list-item-meta>
                   <div slot="title" :style="{ textDecoration: layoutMode === 'topmenu' ? 'line-through' : 'unset' }">固定侧边菜单</div>
                 </a-list-item-meta>
@@ -228,7 +228,7 @@ export default {
   layout: '${this.layoutMode}', // nav menu position: sidemenu or topmenu
   contentWidth: '${this.contentWidth}', // layout of content: Fluid or Fixed, only works when layout is topmenu
   fixedHeader: ${this.fixedHeader}, // sticky header
-  fixSiderbar: ${this.fixSiderbar}, // sticky siderbar
+  fixedSidebar: ${this.fixedSidebar}, // sticky siderbar
   autoHideHeader: ${this.autoHideHeader}, //  auto hide header
   colorWeak: ${this.colorWeak},
   multiTab: ${this.multiTab},
@@ -251,7 +251,7 @@ export default {
     handleLayout (mode) {
       this.$store.dispatch('ToggleLayoutMode', mode)
       // 因为顶部菜单不能固定左侧菜单栏，所以强制关闭
-      this.handleFixSiderbar(false)
+      this.handleFixedSidebar(false)
     },
     handleContentWidthChange (type) {
       this.$store.dispatch('ToggleContentWidth', type)
@@ -268,12 +268,12 @@ export default {
     handleFixedHeaderHidden (autoHidden) {
       this.$store.dispatch('ToggleFixedHeaderHidden', autoHidden)
     },
-    handleFixSiderbar (fixed) {
+    handleFixedSidebar (fixed) {
       if (this.layoutMode === 'topmenu') {
-        this.$store.dispatch('ToggleFixSiderbar', false)
+        this.$store.dispatch('ToggleFixedSidebar', false)
         return
       }
-      this.$store.dispatch('ToggleFixSiderbar', fixed)
+      this.$store.dispatch('ToggleFixedSidebar', fixed)
     }
   }
 }

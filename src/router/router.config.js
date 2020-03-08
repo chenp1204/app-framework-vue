@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/layouts'
+import { UserLayout, BasicLayout, RouteView, BlankLayout, PageView } from '@/components/layouts'
 import bxAnaalyse from '@/assets/icons/bx-analyse.svg?inline'
 
 export const asyncRouterMap = [

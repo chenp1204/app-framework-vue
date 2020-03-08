@@ -113,7 +113,7 @@
 import { timeFix } from '@/utils/util'
 import { mapState } from 'vuex'
 
-import { PageView } from '@/layouts'
+import { PageView } from '@/components/layouts'
 import HeadInfo from '@/components/tools/HeadInfo'
 import { Radar } from '@/components'
 

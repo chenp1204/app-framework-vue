@@ -96,7 +96,7 @@
 </template>
 
 <script>
-import { PageView, RouteView } from '@/layouts'
+import { PageView, RouteView } from '@/components/layouts'
 import { AppPage, ArticlePage, ProjectPage } from './page'
 
 import { mapGetters } from 'vuex'
