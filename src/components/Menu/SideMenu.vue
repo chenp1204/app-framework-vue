@@ -5,7 +5,7 @@
     :collapsible="collapsible"
     v-model="collapsed"
     :trigger="null">
-    <logo v-if="isLeftRight()" />
+    <logo />
     <s-menu
       :collapsed="collapsed"
       :menu="menus"

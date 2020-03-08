@@ -20,7 +20,7 @@
     </a-drawer>
 
     <side-menu
-      v-if="!isMobile() && isSideMenu() && isLeftRight()"
+      v-else-if="isSideMenu()"
       mode="inline"
       :menus="menus"
       :theme="navTheme"
@@ -28,74 +28,30 @@
       :collapsible="true"
     ></side-menu>
 
-    <!-- layout header -->
-    <div v-if="isTopBottom()" :class="[layoutMode === 'row' ? 'sidemenu': 'topmenu']">
-      <global-header
-        :mode="layoutMode"
-        :showNav="isTopMenu()"
-        :navMenus="menus"
-        :theme="navTheme"
-        :collapsed="collapsed"
-        :device="device"
-        @toggle="toggle"
-      />
-    </div>
-
-    <a-layout
-      :class="[layoutStyle, `content-width-${contentWidth}`]"
-      :style="{ paddingLeft: contentPaddingLeft, paddingTop: contentPaddingTop, minHeight: '100vh' }">
+    <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: contentPaddingLeft, minHeight: '100vh' }">
       <!-- layout header -->
       <global-header
-        v-if="isLeftRight()"
         :mode="layoutMode"
-        :showNav="isTopMenu()"
-        :navMenus="menus"
+        :menus="menus"
         :theme="navTheme"
         :collapsed="collapsed"
         :device="device"
         @toggle="toggle"
       />
 
-      <side-menu
-        v-if="!isMobile() && isSideMenu() && isTopBottom()"
-        mode="inline"
-        :menus="menus"
-        theme="light"
-        :collapsed="collapsed"
-        :collapsible="true"
-      ></side-menu>
+      <!-- layout content -->
+      <a-layout-content :style="{ height: '100%', margin: '24px 24px 0', paddingTop: fixedHeader ? '64px' : '0' }">
+        <multi-tab v-if="multiTab"></multi-tab>
+        <transition name="page-transition">
+          <route-view />
+        </transition>
+      </a-layout-content>
 
-      <template v-if="isLeftRight()">
-        <!-- layout content -->
-        <a-layout-content :style="{ height: '100%', margin: '24px 24px 0', paddingTop: fixedHeader ? '64px' : '0' }">
-          <multi-tab v-if="multiTab"></multi-tab>
-          <transition name="page-transition">
-            <route-view />
-          </transition>
-        </a-layout-content>
+      <!-- layout footer -->
+      <a-layout-footer>
+        <global-footer />
+      </a-layout-footer>
 
-        <!-- layout footer -->
-        <a-layout-footer>
-          <global-footer />
-        </a-layout-footer>
-      </template>
-
-      <template v-else>
-        <a-layout :style="{ paddingLeft: fixedSidebar ? '80px' : '0'}">
-          <!-- layout content -->
-          <a-layout-content :style="{ height: '100%', margin: '24px 24px 0' }">
-            <multi-tab v-if="multiTab"></multi-tab>
-            <transition name="page-transition">
-              <route-view />
-            </transition>
-          </a-layout-content>
-
-          <!-- layout footer -->
-          <a-layout-footer>
-            <global-footer />
-          </a-layout-footer>
-        </a-layout>
-      </template>
       <!-- Setting Drawer (show in development mode) -->
       <setting-drawer v-if="!production"></setting-drawer>
     </a-layout>
@@ -140,25 +96,10 @@ export default {
       if (!this.fixedSidebar || this.isMobile()) {
         return '0'
       }
-      if (this.isLeftRight()) {
-        return (this.sidebarOpened) ? '256px' : '80px'
-      } else {
-        return '0'
+      if (this.sidebarOpened) {
+        return '256px'
       }
-    },
-    contentPaddingTop () {
-      if (!this.fixedHeader || this.isMobile()) {
-        return '0'
-      }
-      return this.isTopBottom() ? '64px' : '0'
-    },
-    layoutStyle () {
-      if (this.isLeftRight()) {
-        return 'sidemenu'
-      } else if (this.isTopBottom()) {
-        return this.navPosition === 'left' ? 'topmenu-sidebar' : 'topmenu'
-      }
-      return ''
+      return '80px'
     }
   },
   watch: {

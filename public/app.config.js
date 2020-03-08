@@ -31,7 +31,7 @@
         layoutMode: 'sidemenu', // layout mode: topmenu or sidemenu
         contentWidth: 'Fixed', // layout of content: Fluid or Fixed, only works when layout is topmenu
         fixedHeader: true, // sticky header
-        fixedSidebar: true, // sticky siderbar
+        fixedSidebar: true, // sticky sidebar
         autoHideHeader: false, //  auto hide header
         colorWeak: false,
         multiTab: false

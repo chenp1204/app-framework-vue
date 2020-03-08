@@ -23,9 +23,6 @@ const layout = {
     TOGGLE_THEME: (state, theme) => {
       state.theme = theme
     },
-    TOGGLE_NAV_POSITION: (state, position) => {
-      state.navPosition = position
-    },
     TOGGLE_LAYOUT_MODE: (state, layout) => {
       state.layoutMode = layout
     },
@@ -61,14 +58,14 @@ const layout = {
     ToggleTheme ({ commit }, theme) {
       commit('TOGGLE_THEME', theme)
     },
-    ToggleNavPosition ({ commit }, position) {
-      commit('TOGGLE_NAV_POSITION', position)
-    },
     ToggleLayoutMode ({ commit }, mode) {
       commit('TOGGLE_LAYOUT_MODE', mode)
     },
-    ToggleFixedHeader ({ commit }, fixed) {
-      commit('TOGGLE_FIXED_HEADER', fixed)
+    ToggleFixedHeader ({ commit }, fixedHeader) {
+      if (!fixedHeader) {
+        commit('TOGGLE_FIXED_HEADER_HIDDEN', false)
+      }
+      commit('TOGGLE_FIXED_HEADER', fixedHeader)
     },
     ToggleFixedSidebar ({ commit }, fixedSidebar) {
       commit('TOGGLE_FIXED_SIDEBAR', fixedSidebar)

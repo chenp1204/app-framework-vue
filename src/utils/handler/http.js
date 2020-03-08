@@ -4,12 +4,10 @@ import store from '@/store'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
 import messager from 'ant-design-vue/es/message'
 import { Promise } from 'q'
-import { apiPrefix, isContainer } from '@/config'
-import { userJumper } from '@/views/jumper'
 // 创建axios实例
 const instance = axios.create({
   // eslint-disable-next-line no-undef
-  baseURL: apiPrefix, // api base_url // api的base_url
+  baseURL: '', // api base_url // api的base_url
   timeout: 10000 // 请求超时时间
 })
 
@@ -23,11 +21,6 @@ const errorHandler = (error) => {
       case 401: {
         messager.error(response.data.message)
         store.dispatch('Logout')
-          .then(() => {
-            setTimeout(() => {
-              userJumper.goLogin()
-            }, 500)
-          })
         return
       }
       default:
@@ -54,10 +47,8 @@ const errorHandler = (error) => {
 instance.interceptors.request.use(
   config => {
     // 添加请求token
-    if (!isContainer) {
-      const userToken = Vue.ls.get(ACCESS_TOKEN)
-      config.headers.common['Authorization'] = userToken
-    }
+    const userToken = Vue.ls.get(ACCESS_TOKEN)
+    config.headers.common['Authorization'] = userToken
 
     return config
   },

@@ -16,22 +16,16 @@ const layoutMixin = {
       fixedSidebar: state => state.layout.fixedSidebar,
       contentWidth: state => state.layout.contentWidth,
       autoHideHeader: state => state.layout.autoHideHeader,
-      sidebarOpened: state => state.layout.sidebarOpen,
+      sidebarOpened: state => state.layout.sidebar,
       multiTab: state => state.layout.multiTab
     })
   },
   methods: {
     isTopMenu () {
-      return this.navPosition === 'top'
+      return this.layoutMode === 'topmenu'
     },
     isSideMenu () {
-      return this.navPosition === 'left'
-    },
-    isLeftRight () {
-      return this.layoutMode === 'row'
-    },
-    isTopBottom () {
-      return this.layoutMode === 'column'
+      return !this.isTopMenu()
     }
   }
 }
